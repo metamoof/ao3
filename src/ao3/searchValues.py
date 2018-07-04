@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 from urllib.parse import quote_plus
 
-#Classes that are used to define searches and create a search url
+"""
+	Classes that are used to define searches and create a search url
+	
+	for bugs please mention: lambricm
+"""
 
 class Search_Values(ABC):
 

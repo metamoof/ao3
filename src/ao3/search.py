@@ -1,6 +1,12 @@
 from .searchResult import SearchResult
 from .searchValues import *
 
+"""
+	class that allows user to search with current Ao3 interface
+	
+	for bugs please mention: lambricm
+"""
+
 #object to actually bring all the search options together
 class search(object):
 
@@ -101,4 +107,4 @@ class search(object):
 		
 	#returns a SearchResult object so that we can actually investigate the search
 	def get_result(self):
-		return SearchResult(self, self.sess).page_type()
+		return SearchResult(self, self.sess)._page_type()

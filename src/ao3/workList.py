@@ -1,5 +1,11 @@
 from . import works
 
+"""
+	allows iterating through a collection of works (usually obtained from a search)
+	
+	for bugs please mention: lambricm
+"""
+
 class WorkList(object):
 
 	def __init__(self, works=set()):

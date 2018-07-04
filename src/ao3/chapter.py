@@ -2,6 +2,12 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
+"""
+	class to obtain chapter information on chapters (including text!) as well as move through the chapter
+	
+	For bugs please mention: lambricm
+"""
+
 class Chapter(object):
 
 	base_url = 'https://archiveofourown.org'

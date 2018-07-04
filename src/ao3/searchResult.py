@@ -7,6 +7,12 @@ from sys import exc_info
 from .searchValues import Sort_By
 from .workList import WorkList
 
+"""
+	Used for looking at search results, collecting works, & looking through all pages in result
+
+	for bugs please mention: lambricm
+"""
+
 class SearchResult(ABC, object):
 
 	base_site = "https://www.archiveofourown.org"
