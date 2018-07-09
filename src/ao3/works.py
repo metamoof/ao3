@@ -214,9 +214,9 @@ class Work(object):
             
             id = sub(r"\/series\/","",ret["href"])
             title = ret.contents[0]
-            
-			ret = {"id":id,"title":title}
-        
+
+            ret = {"id":id,"title":title}
+
             return ret
         except:
             return None
