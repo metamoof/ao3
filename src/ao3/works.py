@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import json
+from re import sub
 
 from bs4 import BeautifulSoup, Tag
 import requests
@@ -191,6 +192,37 @@ class Work(object):
     def language(self):
         """The language in which this work is published."""
         return self._lookup_stat('language', "").strip()
+
+    @property
+    def series(self):
+        """Returns the work's series. If no series, returns None."""
+        # The stats are stored in a series of divs of the form
+        #
+        #    <dd class="series">
+        #     <span class="series">
+        #      <span class="position">
+        #       part _ of
+        #       <a href="series link">Series Title</a>
+        #      </span>
+        #     </span>
+        #    </dd>
+        #
+        # This is a convenience method for looking up values from these divs.
+        #
+        try:
+            ret = self._soup.find('dd', attrs={'class': "series"})
+            ret = ret.find("span", attrs={"class":"series"})
+            ret = ret.find("span", attrs={"class":"position"})
+            ret = ret.find("a")
+            
+            id = sub(r"\/series\/","",ret["href"])
+            title = ret.contents[0]
+            
+			ret = {"id":id,"title":title}
+        
+            return ret
+        except:
+            return None
 
     @property
     def published(self):
