@@ -229,6 +229,13 @@ class Work(object):
         return date_val.date()
 
     @property
+    def updated(self):
+        """The date when this work was updated."""
+        date_str = self._lookup_stat('status')
+        date_val = datetime.strptime(date_str, '%Y-%m-%d')
+        return date_val.date()
+
+    @property
     def words(self):
         """The number of words in this work."""
         return int(self._lookup_stat('words', 0))
@@ -317,8 +324,10 @@ class Work(object):
             'characters': self.characters,
             'additional_tags': self.additional_tags,
             'language': self.language,
+			'series':self.series,
             'stats': {
                 'published': str(self.published),
+				'updated': str(self.updated),
                 'words': self.words,
                 # TODO: chapters
                 'comments': self.comments,
