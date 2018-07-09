@@ -185,6 +185,16 @@ class Language(Search_Values):
 	def toString():
 		return "&work_search%5Blanguage_id%5D="
 		
+class Date_From(Search_Values):
+	
+	def toString(date):
+		return "&work_search%5Bdate_from%5D=" + date
+		
+class Date_To(Search_Values):
+	
+	def toString(date):
+		return "&work_search%5Bdate_to%5D=" + date
+		
 class Tag(Search_Values):
 	
 	def toString(tag):
