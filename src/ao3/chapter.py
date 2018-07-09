@@ -23,6 +23,8 @@ class Chapter(object):
 		self._change_page("/works/" + str(self.wrk_id))
 			
 	def _change_page(self, url_add):
+		self.url_add = url_add
+	
 		sess = self.sess
 		req = sess.get(Chapter.base_url + url_add)
 				
@@ -41,6 +43,64 @@ class Chapter(object):
 	@property
 	def work_id(self):
 		return self.wrk_id
+	
+	#PAGE CHANGING AREA
+	
+	#checks if we're on the first page
+	@property
+	def first_chapter(self):
+		#previous button is the only one with:
+		#
+		#	<li class="chapter previous>..</li>
+	
+		try:
+			soup = self._soup.find("li", {"class":"chapter previous"})
+			return (soup is None)
+		except:
+			#could not find button
+			return True
+			
+	#checks if we're on the last page
+	@property
+	def last_chapter(self):
+		#next button is the only one with:
+		#
+		#	<li class="chapter next>..</li>
+		
+		try:
+			soup = self._soup.find("li", {"class":"chapter next"})
+			return (soup is None)
+		except:
+			#could not find button
+			return True
+			
+	#moves us to the next chapter
+	#return - the success of the operation
+	def next_chapter(self):
+		#next button is the only one with:
+		#
+		#	<li class="chapter next>..</li>
+		
+		if not self.last_chapter:
+			soup = self._soup.find("li", {"class":"chapter next"})
+			url = soup.a["href"]
+			self._change_page(url)
+			return True
+		return False
+		
+	#moves us to the previous chapter
+	#return - the success of the operation
+	def prev_chapter(self):
+		#previous button is the only one with:
+		#
+		#	<li class="chapter previous>..</li>
+		
+		if not self.first_chapter:
+			soup = self._soup.find("li", {"class":"chapter previous"})
+			url = soup.a["href"]
+			self._change_page(url)
+			return True
+		return False
 	
 	#PAGE CHANGING AREA
 	
@@ -173,6 +233,9 @@ class Chapter(object):
 			soup = self._soup.find("div", {"id":"chapters"})
 			soup = soup.find("div", {"id":"summary"})
 			soup = soup.find("blockquote", {"class":"userstuff"})
+			soup = soup.find_all("p")
+			
+			print(soup)
 			
 			for p in soup:
 				summ = summ + p.decode_contents() + "\n"
@@ -205,6 +268,8 @@ class Chapter(object):
 		except:
 			pass
 			
+		note = re.sub('\\n\\n            \(See the end of the chapter for  <a href=\"[^"]+\">more notes<\/a>\.\)\\n            \\n',"",note)
+			
 		return note
 			
 	@property
@@ -233,6 +298,75 @@ class Chapter(object):
 		except:
 			pass
 			
+		return note
+		
+	@property
+	def work_beg_note(self):
+		#found here (FIRST CHAPTER):
+		#
+		#	<div class="preface group">
+		#		...
+		#		<div class = "notes module" role="complementary">
+		#			...
+		#			<blockquote class="userstuff">
+		#				beginning note for work in <p> tags
+		#			</blockquote>
+		#		</div>
+		#	</div>
+	
+		curr_url = self.url_add
+		
+		while not self.first_chapter:
+			self.prev_chapter()
+			
+		note = ""
+		
+		try:
+			soup = self._soup.find("div", {"class":"preface group"})
+			soup = soup.find("div", {"class":"notes module"})
+			soup = soup.find("blockquote", {"class":"userstuff"})
+			soup = soup.find_all("p")
+			
+			for p in soup:
+				note = note + p.decode_contents() + "\n"
+		except:
+			pass
+			
+		self._change_page(curr_url)
+		
+		return note
+		
+	@property
+	def work_end_note(self):
+		#found here (LAST CHAPTER):
+		#
+		#	<div id="work_endnotes" class="end notes module>
+		#		...
+		#		<blockquote class="userstuff">
+		#			end note for work in <p> tags
+		#		</blockquote>
+		#		...
+		#	</div>
+	
+		curr_url = self.url_add
+		
+		while not self.last_chapter:
+			self.next_chapter()
+			
+		note = ""
+		
+		try:
+			soup = self._soup.find("div", {"id":"work_endnotes","class":"end notes module"})
+			soup = soup.find("blockquote", {"class":"userstuff"})
+			soup = soup.find_all("p")
+			
+			for p in soup:
+				note = note + p.decode_contents() + "\n"
+		except:
+			pass
+			
+		self._change_page(curr_url)
+		
 		return note
 	
 	#collects all text in soup
