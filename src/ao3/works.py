@@ -196,7 +196,7 @@ class Work(object):
     @property
     def series(self):
         """Returns the work's series. If no series, returns None."""
-        # The stats are stored in a series of divs of the form
+        # The series info is stored at:
         #
         #    <dd class="series">
         #     <span class="series">
@@ -206,9 +206,6 @@ class Work(object):
         #      </span>
         #     </span>
         #    </dd>
-        #
-        # This is a convenience method for looking up values from these divs.
-        #
         try:
             ret = self._soup.find('dd', attrs={'class': "series"})
             ret = ret.find("span", attrs={"class":"series"})
