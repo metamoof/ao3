@@ -241,6 +241,13 @@ class Work(object):
         return int(self._lookup_stat('words', 0))
 
     @property
+    def chapters(self):
+        """The number of chapters in this work."""
+        chapters = self._lookup_stat('chapters', 0)
+        chapters = chapters.split("/")
+        return {"num_chapters":chapters[0],"total_chapters":chapters[1]}
+
+    @property
     def comments(self):
         """The number of comments on this work."""
         return int(self._lookup_stat('comments', 0))
@@ -324,12 +331,12 @@ class Work(object):
             'characters': self.characters,
             'additional_tags': self.additional_tags,
             'language': self.language,
-			'series':self.series,
+            'series':self.series,
             'stats': {
                 'published': str(self.published),
-				'updated': str(self.updated),
+                'updated': str(self.updated),
                 'words': self.words,
-                # TODO: chapters
+                'chapters': self.chapters,
                 'comments': self.comments,
                 'kudos': self.kudos,
                 'bookmarks': self.bookmarks,
