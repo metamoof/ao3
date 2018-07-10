@@ -231,9 +231,12 @@ class Work(object):
     @property
     def updated(self):
         """The date when this work was updated."""
-        date_str = self._lookup_stat('status')
-        date_val = datetime.strptime(date_str, '%Y-%m-%d')
-        return date_val.date()
+        try:
+            date_str = self._lookup_stat('status')
+            date_val = datetime.strptime(date_str, '%Y-%m-%d')
+            return date_val.date()
+        except:
+            return self.published
 
     @property
     def words(self):
