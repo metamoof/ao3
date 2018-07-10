@@ -5,7 +5,7 @@ import re
 from sys import exc_info
 
 from .searchValues import Sort_By
-from .workList import WorkList
+from .workList import WorkList, WorkIterator
 
 """
 	Used for looking at search results, collecting works, & looking through all pages in result
@@ -271,44 +271,35 @@ class SearchResult(ABC, object):
 	# to use 'date posted'
 	
 	def get_all_works(self, search_page=None, worklist=None, check_hash=None):
-		#print("entering function")
 	
 		if not (search_page == None):
-			#print("have search page")
 			
 			works = search_page.get_page_works() #get this page's works
 			work_hash = hash(tuple(works))
 		
 			if check_hash == None: #means we have nothing to check
-				#print("no hash")
 			
 				temp_worklist = WorkList(search_page.get_page_works())
 				
 				return self.get_all_works(search_page, (temp_worklist + worklist), work_hash)
 				
 			else: #need to compare to make sure no new works were suddenly added
-				#print("has hash")
 				
 				if (check_hash == work_hash):
-					#print("same hash")
 				
 					if search_page.is_first_page:
-						#print("return")
 						return worklist
 					else:
-						#print("continue")
 						#the works are the same, so we increment the page
 						search_page.prev_page()
 						return self.get_all_works(search_page, worklist, None)
 					
 				else:
-					#print("different hash")
 					#there has been a new work added! need to re-add all works
 					#NOTE: worklist has a set, so re-adding the same works will be fine
 					
 					return self.get_all_works(search_page, worklist, None)
 		else:
-			#print("no page")
 			#if our search page is none, we need to create one
 			
 			new_search = self.search
@@ -317,6 +308,9 @@ class SearchResult(ABC, object):
 			search_page.last_page() #start at the last page
 			
 			return self.get_all_works(search_page, worklist, check_hash)
+			
+	def get_work_iterator(self):
+		return WorkIterator(self)
 	
 	def get_work(self):
 		id = None

@@ -62,8 +62,14 @@ while ch.next_chapter():
 ### work/worlist testing
 ##
 
-#works = res.get_all_works()				#retrieves a work list
-#wrk = works.next_work					#retrieves a work from the work list
+#TRY NOT TO USE
+#works = res.get_all_works()				#retrieves a work list DEPRECATED - TOO HEAVY, HIGH LOAD TIMES
+#wrk = works.next_work						#retrieves a work from the work list 
+
+#LESS LOAD TIMES, VERY SIMILAR USAGE
+#works = res.get_work_iterator()
+#wrk = works.next_work()
+
 
 ##
 ### obtaining information from all resulting works
