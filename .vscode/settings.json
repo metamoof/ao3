@@ -1,0 +1,7 @@
+{
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.pythonPath": "C:\\Users\\garadford\\.virtualenvs\\podbook-zYQLXvhs\\Scripts\\python.exe"
+
+}
