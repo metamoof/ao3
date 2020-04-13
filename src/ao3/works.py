@@ -7,6 +7,8 @@ from re import sub
 from bs4 import BeautifulSoup, Tag
 import requests
 
+from .chapter import Chapter
+
 
 class WorkNotFound(Exception):
     pass
@@ -51,6 +53,7 @@ class Work(object):
 
         self._html = req.text
         self._soup = BeautifulSoup(self._html, 'html.parser')
+        
 
     def __repr__(self):
         return '%s(id=%r)' % (type(self).__name__, self.id)
@@ -245,10 +248,23 @@ class Work(object):
 
     @property
     def chapters(self):
-        """The number of chapters in this work."""
+        """An ao3.chapters.Chapter object"""
+        #Not sotring anything, as it's not a stateless object
+        return Chapter(self.id)
+
+    @property
+    def num_chapters(self):
+        "The number of chapters in this work"
         chapters = self._lookup_stat('chapters', 0)
         chapters = chapters.split("/")
-        return {"num_chapters":chapters[0],"total_chapters":chapters[1]}
+        return int(chapters[0])
+
+    @property
+    def total_chapters(self):
+        "The number of chapters in this work"
+        chapters = self._lookup_stat('chapters', 0)
+        chapters = chapters.split("/")
+        return int(chapters[1])
 
     @property
     def comments(self):
@@ -339,7 +355,8 @@ class Work(object):
                 'published': str(self.published),
                 'updated': str(self.updated),
                 'words': self.words,
-                'chapters': self.chapters,
+                'num_chapters': self.num_chapters,
+                'total_chapters': self.total_chapters,
                 'comments': self.comments,
                 'kudos': self.kudos,
                 'bookmarks': self.bookmarks,
@@ -347,3 +364,26 @@ class Work(object):
             }
         }
         return json.dumps(data, *args, **kwargs)
+
+    @property
+    def associations(self):
+        """Any related works"""
+        # Currently only verified with one association, 
+        # not found an example of more than one
+        associations_list = self._soup.find('ul', attrs={'class': 'associations'})
+        associations = []
+        for li_tag in associations_list.findAll('li'):
+            d = {}
+            associations.append(d)
+            d['relation'] = li_tag.next.strip()
+            work = li_tag.next.next
+            
+            if 'work' in work['href']:
+                d['work'] = work.next.strip()
+                d['work_id'] = int(work['href'].split('/')[2])
+                author = work.next.next.next
+                if 'users' in author['href']:
+                    d['author_link'] = author['href']
+                    d['author'] = author.next.strip()
+        
+        return associations
